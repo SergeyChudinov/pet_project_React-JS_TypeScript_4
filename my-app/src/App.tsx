@@ -8,8 +8,6 @@ import { AboutsPage } from './pages/AboutPage';
 
 
 const App: React.FC = () => {
-
-
   return (
     <Router>
       <Navbar />

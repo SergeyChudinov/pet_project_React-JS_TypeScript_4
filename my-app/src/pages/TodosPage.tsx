@@ -1,33 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { TodoForm } from "../components/TodoForm";
-import { TodoForm2 } from "../components/TodoForm2"; // Удалить в продакшен версии
 import { TodoList } from "../components/TodoList";
 import { ITodo } from "../interfces";
+import { TodoWithoutId } from '../interfces';
+import axios from "axios";
 
-// declare var confirm: (question: string) => boolean; // теперь можем удалить window внизу
+const url = 'https://react-js-typescript-4-b99bc-default-rtdb.europe-west1.firebasedatabase.app';
+
+declare var confirm: (question: string) => boolean; // теперь можем удалить window внизу
 
 export const TodosPage: React.FC = () => {
 	  const [todos, setTodos] = useState<ITodo[]>([]);
 
     useEffect(() => {
-      const saved = JSON.parse(
-        localStorage.getItem("todos") || "[]"
-      ) as ITodo[];
-      // setTodos(saved);
-      todos.length === 0 && setTodos((todos) => [...todos, ...saved]);
-      // eslint-disable-next-line
+			fetchHandler();
     }, []);
 
-    useEffect(() => {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    }, [todos]);
+		const fetchHandler = async () => {
+      const res = await axios.get(`${url}/notes.json`);
 
-    const addHandler = (title: string) => {
-      const newTodo: ITodo = {
+      if (!res.data) {
+        const newTodo: ITodo[] = [];
+        setTodos(newTodo);
+        return;
+      }
+
+      const newTodo: ITodo[] = Object.keys(res.data).map((key) => {
+        return {
+          ...res.data[key],
+          id: key,
+        };
+      });
+      setTodos(newTodo.reverse());
+    };
+
+    const addHandler = async (title: string) => {
+      const todoWithoutId: TodoWithoutId = {
         title: title,
-        id: Date.now(),
         completed: false,
       };
+      const res = await axios.post(`${url}/notes.json`, todoWithoutId);
+			 const newTodo: ITodo = {
+         ...todoWithoutId,
+         id: res.data.name,
+       };
       setTodos((prev) => [newTodo, ...prev]);
     };
 
@@ -46,23 +62,16 @@ export const TodosPage: React.FC = () => {
       );
     };
 
-    // const toggleHandler = (id: number) => {
-    //   setTodos((prev) =>
-    //     prev.map(todo => {
-    //       if (todo.id === id) {
-    //         todo.completed = !todo.completed;
-    //       }
-    //       return todo;
-    //     })
-    //   )
-    // };
-
-    const removeHandler = (id: number) => {
-      const shoudRemove = window.confirm(
+    const removeHandler = async (id: number) => {
+      const shoudRemove = confirm(
         "Вы уверены, что хотите удалить элемент?"
       );
-      shoudRemove && setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      if (shoudRemove) {
+				await axios.delete(`${url}/notes/${id}.json`);
+        setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      }
     };
+
 	return (
     <>
       <TodoForm onAdd={addHandler} />
