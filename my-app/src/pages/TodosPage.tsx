@@ -17,7 +17,7 @@ export const TodosPage: React.FC = () => {
     }, []);
 
 		const fetchHandler = async () => {
-      const res = await axios.get(`${url}/notes.json`);
+      const res = await axios.get(`${url}/todos.json`);
 
       if (!res.data) {
         const newTodo: ITodo[] = [];
@@ -39,7 +39,7 @@ export const TodosPage: React.FC = () => {
         title: title,
         completed: false,
       };
-      const res = await axios.post(`${url}/notes.json`, todoWithoutId);
+      const res = await axios.post(`${url}/todos.json`, todoWithoutId);
 			 const newTodo: ITodo = {
          ...todoWithoutId,
          id: res.data.name,
@@ -67,7 +67,7 @@ export const TodosPage: React.FC = () => {
         "Вы уверены, что хотите удалить элемент?"
       );
       if (shoudRemove) {
-				await axios.delete(`${url}/notes/${id}.json`);
+				await axios.delete(`${url}/todos/${id}.json`);
         setTodos((prev) => prev.filter((todo) => todo.id !== id));
       }
     };
