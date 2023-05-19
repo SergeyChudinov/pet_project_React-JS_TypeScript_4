@@ -4,4 +4,4 @@ export interface ITodo {
 	completed: boolean
 }
 
-
+export type TodoWithoutId = Omit<ITodo, 'id'>;

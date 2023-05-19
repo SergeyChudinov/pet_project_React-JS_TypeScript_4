@@ -4,7 +4,6 @@ interface TodoFormProps {
   onAdd(title: string): void
 }
 
-
 export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
   const [title, setTitle] = useState<string>("");
 
@@ -19,15 +18,8 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
     }
   };
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onAdd(title);
-    setTitle("");
-  };
-
   return (
     <div className="input-field mt2">
-      {/* <form onSubmit={submitHandler}> */}
       <input
         onChange={changeHandler}
         value={title}
@@ -39,7 +31,6 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
       <label htmlFor="title" className="active">
         Введите название дела
       </label>
-      {/* </form> */}
     </div>
   );
 };
